@@ -1,1 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fusion API Panel</title>
+</head>
+<body>
+  <h1>Fusion Pro API Panel</h1>
 
+  <h2>Available Services</h2>
+  <ul>
+    {% for s in services['services'] %}
+      <li>{{ s['id'] }} - {{ s['name'] }} - ${{ s['price'] }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Place Order</h2>
+  <form id="orderForm">
+    IMEI: <input type="text" name="imei" required><br>
+    Service ID: <input type="number" name="service_id" required><br>
+    <button type="submit">Place Order</button>
+  </form>
+
+  <pre id="result"></pre>
+
+  <script>
+    const form = document.getElementById('orderForm');
+    const resultEl = document.getElementById('result');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const res = await fetch("/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imei: formData.get('imei'),
+          service_id: formData.get('service_id')
+        })
+      });
+      const data = await res.json();
+      resultEl.textContent = JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>
